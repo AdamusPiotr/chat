@@ -2,6 +2,7 @@ const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
 const cors = require("cors");
+const { generateMessage } = require("./helpers/generateMessage");
 
 const app = express();
 const port = process.env.PORT || 3200;
@@ -12,10 +13,11 @@ const io = socketIo(server, { cors: "*" });
 
 let count = 0;
 io.on("connection", (socket) => {
-  socket.broadcast.emit("message", "New user connected");
-
-  socket.on("increment", () => {
-    io.emit("countUpdated", ++count);
+  socket.on("join", ({ username, room }) => {
+    socket.join(room);
+    socket.broadcast
+      .to(room)
+      .emit("message", generateMessage(`${username} has joined !`));
   });
 
   socket.on("sendMessage", (msg, cb) => {
@@ -24,19 +26,15 @@ io.on("connection", (socket) => {
       return;
     }
 
-    socket.emit("message", msg);
-  });
+    const msgToSend = generateMessage(msg);
 
-  socket.on("sendLocation", (cords) => {
-    console.log("cords", cords);
-    socket.emit(
-      "message",
-      `https://google.com/maps?q=${cords.latitude},${cords.longitude}`
-    );
+    socket.emit("message", msgToSend);
   });
 
   socket.on("disconnect", () => {
-    socket.emit("message", "User has disconnected");
+    socket.broadcast
+      .to(room)
+      .emit("message", generateMessage(`${username} has disconnected !`));
   });
 });
 

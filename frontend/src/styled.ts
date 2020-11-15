@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 interface ButtonProps { 
-    readonly isAlignedToButton?: boolean;
+    readonly isAlignedToInput?: boolean;
 }
 
 export const Button = styled.button<ButtonProps>`
@@ -20,7 +20,7 @@ export const Button = styled.button<ButtonProps>`
     cursor: pointer;
 
     ${props => {
-        if(props.isAlignedToButton) {
+        if(props.isAlignedToInput) {
             return `
                 border-top-left-radius: 0;
                 border-bottom-left-radius: 0;
@@ -28,13 +28,23 @@ export const Button = styled.button<ButtonProps>`
         }
     }}
 `;
-
-export const Input = styled.input`
+interface InputProps {
+    readonly withButton?: boolean;
+}
+export const Input = styled.input<InputProps>`
     padding: 1rem 2rem;
     font-size: 1.5rem;
     background-color: white;
     border: 1px;
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;  
     margin-bottom: 10px; 
+    border-radius: 12px;
+
+    ${props => {
+        if(props.withButton) {
+            return `
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;  
+            `
+        }}
+    }
 `;

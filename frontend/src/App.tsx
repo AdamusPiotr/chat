@@ -14,7 +14,6 @@ function App() {
       <Switch>
         <Route path="/chat" component={Chat}/>
         <Route path="/" component={LandingPage}/>
-    
       </Switch>
     </Router>
     </>

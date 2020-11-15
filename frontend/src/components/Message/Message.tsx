@@ -4,13 +4,14 @@ import * as Styles from './message.styled'
 
 interface Props { 
     message: Message
-    isYours: boolean
+    isYours?: boolean
 }
 
 export const ChatMessage : FC<Props> = ({message, isYours})  =>  {
     return (
         <Styles.MessageContainer isYourMessage={isYours}>
-            {message.text}
+            <Styles.UserName>Piotr Adamus</Styles.UserName>
+           <Styles.TimesStamp>{message.timestamp}</Styles.TimesStamp> - {message.text}
         </Styles.MessageContainer>
     )
 }

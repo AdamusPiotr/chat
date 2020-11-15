@@ -12,6 +12,7 @@
   "dependencies": {
     "@types/socket.io": "^2.1.11",
     "cors": "^2.8.5",
+    "dayjs": "^1.9.6",
     "express": "^4.17.1",
     "socket.io": "^3.0.1"
   }
