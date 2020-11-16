@@ -9,10 +9,11 @@ function App() {
 
   return (
   <>
+ 
     <GlobalStyles/>
     <Router>
       <Switch>
-        <Route path="/chat" component={Chat}/>
+        <Route path="/:username/:room" component={Chat}/>
         <Route path="/" component={LandingPage}/>
       </Switch>
     </Router>

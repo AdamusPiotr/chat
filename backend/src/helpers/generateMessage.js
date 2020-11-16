@@ -3,7 +3,7 @@ const dayjs = require("dayjs");
 
 const generateMessage = (message) => ({
   text: message,
-  timestamp: dayjs.unix(),
+  timestamp: dayjs().unix(),
 });
 
 module.exports = {

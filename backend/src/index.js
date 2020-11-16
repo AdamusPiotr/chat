@@ -3,38 +3,68 @@ const http = require("http");
 const socketIo = require("socket.io");
 const cors = require("cors");
 const { generateMessage } = require("./helpers/generateMessage");
+const { userService } = require("./services/User");
+const { closeSync } = require("fs");
 
 const app = express();
 const port = process.env.PORT || 3200;
 const server = http.createServer(app);
 app.use(cors());
 
+console.log("generateMessage(/)", generateMessage("dupa"));
 const io = socketIo(server, { cors: "*" });
 
 let count = 0;
 io.on("connection", (socket) => {
-  socket.on("join", ({ username, room }) => {
+  socket.on("join", ({ username, room }, callback) => {
+    const { error, user } = userService.addUser({
+      id: socket.id,
+      username,
+      room,
+    });
+
+    if (error) {
+      return callback(error);
+    }
+
     socket.join(room);
     socket.broadcast
       .to(room)
       .emit("message", generateMessage(`${username} has joined !`));
+
+    callback();
   });
 
-  socket.on("sendMessage", (msg, cb) => {
+  socket.on("sendMessage", (msg, callback) => {
+    const user = userService.getUser(socket.id);
+
+    console.log("user", user && user.room);
+
     if (msg === "fuck") {
-      cb("Forbidden word");
+      callback("Forbidden word");
       return;
     }
 
     const msgToSend = generateMessage(msg);
 
-    socket.emit("message", msgToSend);
+    console.log("emitting event");
+    io.to(user.room).emit("message", msgToSend);
+
+    callback();
   });
 
   socket.on("disconnect", () => {
+    const { error, user } = userService.removeUser(socket.id);
+
+    console.log("we are removing", user);
+
+    if (error) {
+      return console.error(error);
+    }
+
     socket.broadcast
-      .to(room)
-      .emit("message", generateMessage(`${username} has disconnected !`));
+      .to(user.room)
+      .emit("message", generateMessage(`${user.username} has disconnected !`));
   });
 });
 
